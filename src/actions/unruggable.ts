@@ -89,13 +89,19 @@ export const deployToken: Action = {
     },
     description:
         "Deploy an Unruggable Memecoin on Starknet. Use this action when a user asks you to deploy a new token on Starknet.",
-    handler: async (
+    handler: async ({
+        runtime,
+        message,
+        state,
+        options,
+        callback,
+    }: {
         runtime: IAgentRuntime,
         message: Memory,
         state: State,
-        _options: { [key: string]: unknown },
-        callback?: HandlerCallback
-    ): Promise<boolean> => {
+        options: { [key: string]: unknown },
+        callback: HandlerCallback
+    }): Promise<boolean> => {
         elizaLogger.log(
             "Starting DEPLOY_STARKNET_UNRUGGABLE_MEME_TOKEN handler..."
         );

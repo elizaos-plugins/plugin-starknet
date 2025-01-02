@@ -86,13 +86,19 @@ export const executeSwap: Action = {
     },
     description:
         "Perform a token swap on starknet. Use this action when a user asks you to swap tokens anything.",
-    handler: async (
+    handler: async ({
+        runtime,
+        message,
+        state,
+        options,
+        callback,
+    }: {
         runtime: IAgentRuntime,
         message: Memory,
         state: State,
-        _options: { [key: string]: unknown },
-        callback?: HandlerCallback
-    ): Promise<boolean> => {
+        options: { [key: string]: unknown },
+        callback: HandlerCallback
+    }): Promise<boolean> => {
         elizaLogger.log("Starting EXECUTE_STARKNET_SWAP handler...");
         if (!state) {
             state = (await runtime.composeState(message)) as State;

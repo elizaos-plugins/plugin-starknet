@@ -113,13 +113,19 @@ export default {
     },
     description:
         "MUST use this action if the user requests send a token or transfer a token, the request might be varied, but it will always be a token transfer. If the user requests a transfer of lords, use this action.",
-    handler: async (
+    handler: async ({
+        runtime,
+        message,
+        state,
+        options,
+        callback,
+    }: {
         runtime: IAgentRuntime,
         message: Memory,
         state: State,
-        _options: { [key: string]: unknown },
-        callback?: HandlerCallback
-    ): Promise<boolean> => {
+        options: { [key: string]: unknown },
+        callback: HandlerCallback
+    }): Promise<boolean> => {
         elizaLogger.log("Starting SEND_TOKEN handler...");
 
         // Initialize or update state
