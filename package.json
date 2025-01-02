@@ -21,5 +21,30 @@
   },
   "peerDependencies": {
     "whatwg-url": "7.1.0"
+  },
+  "pluginType": "elizaos:plugin:1.0.0",
+  "pluginParameters": {
+    "type": "object",
+    "required": ["starknetAddress", "starknetPrivateKey"],
+    "properties": {
+      "starknetAddress": {
+        "type": "string",
+        "description": "Starknet address"
+      },
+      "starknetPrivateKey": {
+        "type": "string",
+        "description": "Starknet private key"
+      },
+      "starknetRpcUrl": {
+        "type": "string",
+        "description": "Starknet RPC URL",
+        "default": "https://starknet-mainnet.public.blastapi.io"
+      }
+    }
+  },
+  "pluginEnv": {
+    "STARKNET_ADDRESS": "starknetAddress",
+    "STARKNET_PRIVATE_KEY": "starknetPrivateKey",
+    "STARKNET_RPC_URL": "starknetRpcUrl"
   }
 }
