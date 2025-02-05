@@ -105,13 +105,14 @@ var executeSwap = {
   description: "Perform a token swap on starknet. Use this action when a user asks you to swap tokens anything.",
   handler: async (runtime, message, state, _options, callback) => {
     elizaLogger2.log("Starting EXECUTE_STARKNET_SWAP handler...");
-    if (!state) {
-      state = await runtime.composeState(message);
+    let currentState = state;
+    if (!currentState) {
+      currentState = await runtime.composeState(message);
     } else {
-      state = await runtime.updateRecentMessageState(state);
+      currentState = await runtime.updateRecentMessageState(currentState);
     }
     const swapContext = composeContext({
-      state,
+      state: currentState,
       template: swapTemplate
     });
     const response = await generateObjectDeprecated({
@@ -141,15 +142,15 @@ var executeSwap = {
         }
       );
       elizaLogger2.log(
-        "Swap completed successfully! tx: " + swapResult.transactionHash
+        `Swap completed successfully! tx: ${swapResult.transactionHash}`
       );
       callback?.({
-        text: "Swap completed successfully! tx: " + swapResult.transactionHash
+        text: `Swap completed successfully! tx: ${swapResult.transactionHash}`
       });
       return true;
     } catch (error) {
       elizaLogger2.error("Error during token swap:", error);
-      callback?.({ text: `Error during swap:` });
+      callback?.({ text: `Error during swap: ${error.message}` });
       return false;
     }
   },
@@ -1247,7 +1248,9 @@ var erc20_default = [
 
 // src/utils/ERC20Token.ts
 var ERC20Token = class {
+  // abi: any;
   abi;
+  // Fix: Use the actual type of the ABI
   contract;
   calldata;
   constructor(token, providerOrAccount) {
@@ -1396,13 +1399,14 @@ var transfer_default = {
   description: "MUST use this action if the user requests send a token or transfer a token, the request might be varied, but it will always be a token transfer. If the user requests a transfer of lords, use this action.",
   handler: async (runtime, message, state, _options, callback) => {
     elizaLogger3.log("Starting SEND_TOKEN handler...");
-    if (!state) {
-      state = await runtime.composeState(message);
+    let currentState = state;
+    if (!currentState) {
+      currentState = await runtime.composeState(message);
     } else {
-      state = await runtime.updateRecentMessageState(state);
+      currentState = await runtime.updateRecentMessageState(currentState);
     }
     const transferContext = composeContext2({
-      state,
+      state: currentState,
       template: transferTemplate
     });
     const content = await generateObjectDeprecated2({
@@ -1426,7 +1430,8 @@ var transfer_default = {
       const erc20Token = new ERC20Token(content.tokenAddress, account);
       const decimals = await erc20Token.decimals();
       const amountInteger = Math.floor(
-        Number(content.amount) * Math.pow(10, Number(decimals))
+        Number(content.amount) * 10 ** Number(decimals)
+        // Fix: Use exponentiation operator instead of Math.pow
       );
       const amountWei = BigInt(amountInteger.toString());
       const recipient = content.recipient ?? await getAddressFromName(account, content.starkName);
@@ -1441,11 +1446,13 @@ var transfer_default = {
       );
       const tx = await account.execute(transferCall);
       elizaLogger3.success(
-        "Transfer completed successfully! tx: " + tx.transaction_hash
+        `Transfer completed successfully! tx: ${tx.transaction_hash}`
+        // Fix: Use template literal
       );
       if (callback) {
         callback({
-          text: "Transfer completed successfully! tx: " + tx.transaction_hash,
+          text: `Transfer completed successfully! tx: ${tx.transaction_hash}`,
+          // Fix: Use template literal
           content: {}
         });
       }
@@ -1563,7 +1570,7 @@ function isDeployTokenContent(content) {
   if (!validTypes) {
     return false;
   }
-  const validAddresses = content.name.length > 2 && content.symbol.length > 2 && parseInt(content.initialSupply) > 0 && content.owner.startsWith("0x") && content.owner.length === 66;
+  const validAddresses = content.name.length > 2 && content.symbol.length > 2 && Number.parseInt(content.initialSupply) > 0 && content.owner.startsWith("0x") && content.owner.length === 66;
   return validAddresses;
 }
 var deployTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
@@ -1603,13 +1610,14 @@ var deployToken = {
     elizaLogger4.log(
       "Starting DEPLOY_STARKNET_UNRUGGABLE_MEME_TOKEN handler..."
     );
-    if (!state) {
-      state = await runtime.composeState(message);
+    let currentState = state;
+    if (!currentState) {
+      currentState = await runtime.composeState(message);
     } else {
-      state = await runtime.updateRecentMessageState(state);
+      currentState = await runtime.updateRecentMessageState(currentState);
     }
     const deployContext = composeContext3({
-      state,
+      state: currentState,
       template: deployTemplate
     });
     const response = await generateObjectDeprecated3({
@@ -1617,7 +1625,7 @@ var deployToken = {
       context: deployContext,
       modelClass: ModelClass3.MEDIUM
     });
-    elizaLogger4.log("init supply." + response.initialSupply);
+    elizaLogger4.log(`init supply. ${response.initialSupply}`);
     elizaLogger4.log(response);
     if (!isDeployTokenContent(response)) {
       callback?.({
@@ -1644,7 +1652,7 @@ var deployToken = {
         }
       );
       elizaLogger4.log(
-        "Token deployment initiated for: " + response.name + " at address: " + tokenAddress
+        `Token deployment initiated for: ${response.name} at address: ${tokenAddress}`
       );
       await launchOnEkubo(config, {
         antiBotPeriodInSecs: 3600,
@@ -1672,7 +1680,7 @@ var deployToken = {
         ]
       });
       callback?.({
-        text: "Token Deployment completed successfully!" + response.symbol + " deployed in tx: " + transactionHash
+        text: `Token Deployment completed successfully! ${response.symbol} deployed in tx: ${transactionHash}`
       });
       return true;
     } catch (error) {
@@ -1785,13 +1793,14 @@ var subdomain_default = {
   description: "MUST use this action if the user requests create a subdomain, the request might be varied, but it will always be a subdomain creation.",
   handler: async (runtime, message, state, _options, callback) => {
     elizaLogger5.log("Starting CREATE_SUBDOMAIN handler...");
-    if (!state) {
-      state = await runtime.composeState(message);
+    let currentState = state;
+    if (!currentState) {
+      currentState = await runtime.composeState(message);
     } else {
-      state = await runtime.updateRecentMessageState(state);
+      currentState = await runtime.updateRecentMessageState(currentState);
     }
     const transferContext = composeContext4({
-      state,
+      state: currentState,
       template: transferTemplate2
     });
     const content = await generateObjectDeprecated4({
@@ -1825,11 +1834,11 @@ var subdomain_default = {
       );
       const tx = await account.execute(transferCall);
       elizaLogger5.success(
-        "Transfer completed successfully! tx: " + tx.transaction_hash
+        `Transfer completed successfully! tx: ${tx.transaction_hash}`
       );
       if (callback) {
         callback({
-          text: "Transfer completed successfully! tx: " + tx.transaction_hash,
+          text: `Transfer completed successfully! tx: ${tx.transaction_hash}`,
           content: {}
         });
       }
