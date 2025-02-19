@@ -1,7 +1,7 @@
 import type { IAgentRuntime } from "@elizaos/core";
 import { z } from "zod";
 
-const STARKNET_PUBLIC_RPC = "https://starknet-mainnet.public.blastapi.io";
+const STARKNET_PUBLIC_RPC = "https://rpc.starknet.lava.build";
 
 export const starknetEnvSchema = z.object({
     STARKNET_ADDRESS: z.string().min(1, "Starknet address is required"),
