@@ -36,7 +36,7 @@ The plugin requires the following environment variables:
 ```typescript
 STARKNET_ADDRESS = your_starknet_address;
 STARKNET_PRIVATE_KEY = your_private_key;
-STARKNET_RPC_URL = your_rpc_url;
+STARKNET_RPC_URL = your_rpc_url;  // e.g. https://rpc.starknet.lava.build
 ```
 
 ## Actions
